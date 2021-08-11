@@ -48,6 +48,7 @@
   template:
     dest: "/etc/systemd/system/etcd.service"
     src: "etcd.service.j2"
+  notify: Restart etcd.service
 
 - name: Enable etcd
   systemd:
