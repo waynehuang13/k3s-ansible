@@ -1,0 +1,55 @@
+---
+# - name: Install etcd
+#   apt:
+#     name: etcd
+#     state: present
+#     update_cache: true
+
+
+- name: Download and unpack directly from HTTP source
+  unarchive:
+    src: "https://github.com/etcd-io/etcd/releases/download/{{ etcd.version }}/etcd-{{ etcd.version }}-linux-amd64.tar.gz"
+    dest: "/tmp/"
+    copy: no
+    owner: root
+    group: root
+
+- name: Copy binaries to /usr/local/bin
+  shell: |
+    cp -f /tmp/etcd-{{ etcd.version }}-linux-amd64/{{ item }} /usr/local/bin/
+  with_items:
+    - etcd
+    - etcdctl
+
+- name: Change etcd data directory permissions
+  file:
+    path: "{{ item }}"
+    owner: "etcd"
+    group: "etcd"
+    recurse: yes
+  with_items:
+    - /etc/etcd
+    - "{{ etcd.data_dir }}"
+    - "{{ etcd.initial_ca_dir }}"
+
+- name: Generate /etc/default/etcd file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src: "etcd.j2", dest: "/etc/default/etcd", mode: 0644 }
+    - { src: "etcd_env.sh", dest: "/root/etcd_env.sh", mode: 755 }
+  notify: Restart etcd.service
+
+- name: Configure etcd systemd
+  template:
+    dest: "/etc/systemd/system/etcd.service"
+    src: "etcd.service.j2"
+
+- name: Enable etcd
+  systemd:
+    name: etcd.service
+    enabled: yes

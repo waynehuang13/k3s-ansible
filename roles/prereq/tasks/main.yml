@@ -1,0 +1,8 @@
+---
+- name: Configure common stuff
+  include_tasks:
+    file: "{{ item }}"
+  with_items:
+    - common.yml
+    - sshd.yml
+    - network.yml

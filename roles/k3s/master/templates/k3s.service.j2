@@ -1,0 +1,25 @@
+[Unit]
+Description=Lightweight Kubernetes
+Documentation=https://k3s.io
+After=network-online.target
+
+[Service]
+Type=notify
+ExecStartPre=-/sbin/modprobe br_netfilter
+ExecStartPre=-/sbin/modprobe overlay
+Environment=K3S_DATASTORE_ENDPOINT={{ etcd.data_store_endpoint }}
+ExecStart=/usr/local/bin/k3s server --data-dir {{ k3s.data_dir }} --datastore-cafile {{ etcd.initial_ca_dir }}/ca.pem --datastore-certfile {{ etcd.initial_ca_dir }}/{{ inventory_hostname.split('.') | first }}.pem --datastore-keyfile	{{ etcd.initial_ca_dir }}/{{ inventory_hostname.split('.') | first }}-key.pem --disable="{{ k3s.disable_svc }}"
+KillMode=process
+Delegate=yes
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

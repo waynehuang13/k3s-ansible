@@ -1,0 +1,30 @@
+---
+
+- hosts: k3s_cluster
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: prereq
+    - role: download
+    - role: nfs/client
+      tags: nfs
+
+- hosts: nfs
+  become: yes
+  roles:
+    - role: nfs/server
+      tags: nfs-server
+
+- hosts: master
+  become: yes
+  roles:
+    - role: ca
+    - role: etcd
+      tags: etcd
+    - role: k3s/master
+
+- hosts: worker
+  become: yes
+  roles:
+    - role: k3s/worker
+

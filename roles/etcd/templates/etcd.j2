@@ -1,0 +1,26 @@
+# [GENERAL CONFIG]
+ETCD_DATA_DIR="{{ etcd.data_dir }}"
+ETCD_ELECTION_TIMEOUT={{ etcd.election_timeout }}
+ETCD_HEARTBEAT_INTERVAL={{ etcd.heartbeat_interval }}
+ETCD_NAME="{{ inventory_hostname.split('.') | first }}"
+
+# [MEMBER CONFIG]
+ETCD_LISTEN_PEER_URLS="https://{{ ansible_ssh_host }}:2380"
+ETCD_LISTEN_CLIENT_URLS="https://{{ ansible_ssh_host }}:2379"
+
+# [CLLUSTER CONFIG]
+ETCD_INITIAL_CLUSTER_STATE=new
+ETCD_INITIAL_CLUSTER_TOKEN="{{ etcd.cluster_token }}"
+
+# ETCD_INITIAL_CLUSTER="{{ etcd.initial_nodes }}"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="https://{{ ansible_ssh_host }}:2380"
+ETCD_ADVERTISE_CLIENT_URLS="https://{{ ansible_ssh_host }}:2379"
+
+# [TLS CONFIG]
+ETCD_TRUSTED_CA_FILE="{{ etcd.initial_ca_dir }}/ca.pem"
+ETCD_CERT_FILE="{{ etcd.initial_ca_dir }}/{{ inventory_hostname.split('.') | first }}.pem"
+ETCD_KEY_FILE="{{ etcd.initial_ca_dir }}/{{ inventory_hostname.split('.') | first }}-key.pem"
+
+ETCD_PEER_TRUSTED_CA_FILE="{{ etcd.initial_ca_dir }}/ca.pem"
+ETCD_PEER_KEY_FILE="{{ etcd.initial_ca_dir }}/{{ inventory_hostname.split('.') | first }}-key.pem"
+ETCD_PEER_CERT_FILE="{{ etcd.initial_ca_dir }}/{{ inventory_hostname.split('.') | first }}.pem"

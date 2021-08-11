@@ -1,0 +1,10 @@
+{
+  "signing":
+    {
+      "default":
+        {
+          "expiry": "{{ etcd.CA.expiration }}",
+          "usages": ["signing","key encipherment","server auth","client auth"]
+        }
+    }
+}
